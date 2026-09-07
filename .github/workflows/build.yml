@@ -1,0 +1,46 @@
+name: Build macOS DMG
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: macos-dmg-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: macos-14
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install build tools
+        run: |
+          brew install xcodegen
+          python3 -m pip install -r scripts/requirements.txt
+      - name: Test and build universal DMG
+        run: bash scripts/build.sh
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: Build/xcodebuild.log
+          if-no-files-found: ignore
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: QingRightClick-universal-dmg
+          path: out/*
+          if-no-files-found: error
+      - name: Publish test build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "build-${{ github.run_number }}" out/*.dmg out/SHA256SUMS.txt \
+            --target "${{ github.sha }}" \
+            --title "轻右键 0.1.0 · 测试构建 ${{ github.run_number }}" \
+            --prerelease --notes-file RELEASE_NOTES.md

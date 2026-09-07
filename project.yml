@@ -1,0 +1,61 @@
+name: QingRightClick
+options:
+  deploymentTarget:
+    macOS: "13.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
+    CODE_SIGNING_ALLOWED: NO
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  QingRightClick:
+    type: application
+    platform: macOS
+    sources:
+      - Sources/App
+      - Sources/Shared
+      - path: Resources/Templates
+        type: folder
+    info:
+      path: Build/App-Info.plist
+      properties:
+        CFBundleDisplayName: 轻右键
+        CFBundleName: QingRightClick
+        NSPrincipalClass: NSApplication
+        LSMinimumSystemVersion: "13.0"
+        CFBundleURLTypes:
+          - CFBundleURLName: QingRightClick Actions
+            CFBundleURLSchemes: [qingrightclick]
+        NSHumanReadableCopyright: "Copyright © 2026 QingRightClick contributors"
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: io.github.jingyuh682.qingrightclick
+      ENABLE_HARDENED_RUNTIME: YES
+    dependencies:
+      - target: FinderExtension
+        embed: true
+    scheme: {}
+  FinderExtension:
+    type: app-extension
+    platform: macOS
+    sources:
+      - Sources/Extension
+      - Sources/Shared/ActionRequest.swift
+    info:
+      path: Build/Extension-Info.plist
+      properties:
+        CFBundleDisplayName: 轻右键 Finder 扩展
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.FinderSync
+          NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).FinderSync"
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: io.github.jingyuh682.qingrightclick.finder
+      SKIP_INSTALL: YES
+      APPLICATION_EXTENSION_API_ONLY: YES
+    entitlements:
+      path: Build/Finder.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+    dependencies:
+      - sdk: FinderSync.framework

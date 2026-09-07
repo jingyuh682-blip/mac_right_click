@@ -1,0 +1,5 @@
+Build/
+out/
+*.xcodeproj/
+Resources/Templates/
+.DS_Store
