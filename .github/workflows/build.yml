@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-logs
-          path: Build/xcodebuild.log
+          path: Build/*.log
           if-no-files-found: ignore
       - name: Upload DMG
         uses: actions/upload-artifact@v4

@@ -14,14 +14,9 @@ final class FinderSync: FIFinderSync {
     override func menu(for menuKind: FIMenuKind) -> NSMenu? {
         let controller = FIFinderSyncController.default()
         guard let target = controller.targetedURL() else { return nil }
-        let directory: URL
-        if menuKind == .contextualMenuForContainer {
-            directory = target
-        } else {
-            // URL.hasDirectoryPath is not guaranteed for Finder-provided URLs.
-            let isDirectory = (try? target.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) ?? false
-            directory = isDirectory ? target : target.deletingLastPathComponent()
-        }
+        // Pass Finder's target unchanged. Resolve files versus folders in the
+        // host app, which is not limited by the extension's filesystem sandbox.
+        let directory = target
         let menu = NSMenu(title: "轻右键")
         let root = NSMenuItem(title: "新建文件", action: nil, keyEquivalent: "")
         let submenu = NSMenu(title: "新建文件")

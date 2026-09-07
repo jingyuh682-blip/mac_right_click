@@ -12,6 +12,15 @@ enum CreationError: LocalizedError {
 }
 
 enum FileCreator {
+    static func destination(for target: URL) throws -> URL {
+        var isDirectory: ObjCBool = false
+        guard target.isFileURL,
+              FileManager.default.fileExists(atPath: target.path, isDirectory: &isDirectory) else {
+            throw CreationError.invalidDirectory
+        }
+        return isDirectory.boolValue ? target : target.deletingLastPathComponent()
+    }
+
     static func create(data: Data, directory: URL, name: String, ext: String) throws -> URL {
         let raw = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !raw.isEmpty, raw != ".", raw != "..",

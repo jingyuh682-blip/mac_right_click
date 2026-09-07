@@ -32,7 +32,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 return
             }
             NSApp.activate(ignoringOtherApps: true)
-            create(kind: request.kind, directory: request.directory)
+            do {
+                let directory = try FileCreator.destination(for: request.directory)
+                create(kind: request.kind, directory: directory)
+            } catch { showError(error) }
         }
     }
 

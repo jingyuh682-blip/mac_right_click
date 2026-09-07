@@ -16,11 +16,12 @@ EXT="$APP/Contents/PlugIns/FinderExtension.appex"
 codesign --force --sign - --entitlements Build/Finder.entitlements "$EXT"
 codesign --force --sign - "$APP"
 codesign --verify --deep --strict --verbose=2 "$APP"
-lipo -verify_arch arm64 x86_64 "$APP/Contents/MacOS/QingRightClick"
-lipo -verify_arch arm64 x86_64 "$EXT/Contents/MacOS/FinderExtension"
+lipo "$APP/Contents/MacOS/QingRightClick" -verify_arch arm64 x86_64
+lipo "$EXT/Contents/MacOS/FinderExtension" -verify_arch arm64 x86_64
 for ext in txt md doc docx xlsx pptx; do
   cmp "Resources/Templates/blank.$ext" "$APP/Contents/Resources/Templates/blank.$ext"
 done
+python3 scripts/smoke_app.py "$APP"
 mkdir -p Build/DMG out
 ditto "$APP" Build/DMG/QingRightClick.app
 ln -s /Applications Build/DMG/Applications

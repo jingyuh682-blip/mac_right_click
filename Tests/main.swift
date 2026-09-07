@@ -28,6 +28,11 @@ rejects("missing folder") {
 rejects("file is not directory") {
     _ = try FileCreator.create(data: original, directory: first, name: "x", ext: "txt")
 }
+let folderDestination = try FileCreator.destination(for: directory)
+check(folderDestination.path == directory.path, "folder right click stays in folder")
+let fileDestination = try FileCreator.destination(for: first)
+check(fileDestination.path == directory.path, "file right click targets parent")
+rejects("missing Finder target") { _ = try FileCreator.destination(for: directory.appendingPathComponent("missing")) }
 let upper = try FileCreator.create(data: original, directory: directory, name: "UPPER.TXT", ext: "txt")
 check(upper.lastPathComponent == "UPPER.txt", "case-insensitive extension")
 let link = directory.appendingPathComponent("link.txt")
